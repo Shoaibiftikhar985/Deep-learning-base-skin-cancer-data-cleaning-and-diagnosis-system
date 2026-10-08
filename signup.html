@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create account | DermaNova AI</title>
+  <link rel="icon" href="favicon.png?v=2" type="image/png" sizes="16x16 32x32 48x48 96x96 144x144 256x256">
+  <link rel="shortcut icon" href="favicon.png?v=2" type="image/png">
+  <link rel="apple-touch-icon" href="favicon.png?v=2">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f7fafd;
+      min-height: 100vh;
+      color: #1a2c3e;
+    }
+
+    /* ── Split-screen shell ── */
+    .auth-shell { display: flex; min-height: 100vh; }
+
+    /* Left brand panel */
+    .brand-panel {
+      flex: 1 1 46%;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(155deg, #163d8c 0%, #2266dc 52%, #3b82f6 100%);
+      color: #fff;
+      padding: 56px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .brand-panel::before,
+    .brand-panel::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      pointer-events: none;
+    }
+    .brand-panel::before { width: 380px; height: 380px; top: -120px; right: -120px; }
+    .brand-panel::after  { width: 260px; height: 260px; bottom: -90px; left: -80px; background: rgba(255,255,255,0.06); }
+    .brand-logo { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .brand-logo img {
+      width: 46px; height: 46px; object-fit: contain;
+      background: rgba(255,255,255,0.95); border-radius: 12px; padding: 5px;
+    }
+    .brand-logo span { font-size: 19px; font-weight: 700; letter-spacing: -0.2px; }
+    .brand-hero { position: relative; z-index: 1; }
+    .brand-hero h2 { font-size: 34px; line-height: 1.22; font-weight: 700; margin-bottom: 16px; max-width: 440px; }
+    .brand-hero p { font-size: 15px; line-height: 1.6; opacity: 0.85; max-width: 400px; margin-bottom: 28px; }
+    .brand-features { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .brand-features li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 14.5px; opacity: 0.95; line-height: 1.45;
+    }
+    .brand-features li::before {
+      content: '✓';
+      flex-shrink: 0;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; margin-top: 1px;
+    }
+    .brand-foot { position: relative; z-index: 1; font-size: 12.5px; opacity: 0.7; }
+
+    /* Right form panel */
+    .form-panel {
+      flex: 1 1 54%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 24px;
+    }
+    .auth-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 430px;
+      box-shadow: 0 12px 44px rgba(16, 42, 77, 0.08);
+      border: 1px solid #eef2f7;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .brand-panel { display: none; }
+      .form-panel { flex: 1; padding: 24px 18px; }
+    }
+
+    .logo-icon { display: none; margin-bottom: 14px; }
+    .logo-icon img { width: 72px; height: 72px; object-fit: contain; display: block; margin: 0 auto; }
+    @media (max-width: 900px) { .logo-icon { display: block; } }
+
+    h1 { font-size: 27px; font-weight: 700; color: #1a2c3e; margin-bottom: 8px; }
+    .sub { color: #6c7a8e; margin-bottom: 28px; font-size: 15px; }
+
+    .input-group { margin-bottom: 18px; text-align: left; }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #2c3e50; }
+    input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1px solid #e2e9f2;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      transition: 0.2s;
+    }
+    input:focus { outline: none; border-color: #2266dc; box-shadow: 0 0 0 3px rgba(34,102,220,0.1); }
+
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 46px; }
+    .pw-toggle {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 16px;
+      opacity: 0.55; padding: 4px; line-height: 1;
+    }
+    .pw-toggle:hover { opacity: 1; }
+
+    .pw-reqs {
+      list-style: none; text-align: left; margin: 0 0 20px; padding: 0;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 7px 12px;
+    }
+    .pw-reqs li {
+      font-size: 12px; color: #8a99aa; position: relative; padding-left: 20px;
+      transition: color 0.2s;
+    }
+    .pw-reqs li::before { content: '○'; position: absolute; left: 0; font-size: 13px; line-height: 1.2; }
+    .pw-reqs li.ok { color: #1a7a4a; font-weight: 500; }
+    .pw-reqs li.ok::before { content: '✓'; }
+
+    button#signupBtn {
+      width: 100%;
+      padding: 14px;
+      background: #2266dc;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 4px;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 6px 16px rgba(34,102,220,0.22);
+    }
+    button#signupBtn:hover { background: #1a55c4; }
+    button#signupBtn:active { transform: scale(0.98); }
+    button#signupBtn:disabled { background: #a0b4d6; cursor: not-allowed; box-shadow: none; }
+
+    /* ── Social sign-up ── */
+    .divider {
+      display: flex; align-items: center; gap: 14px;
+      margin: 22px 0 18px; color: #9aa7b6; font-size: 12.5px; font-weight: 500;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e6ecf3; }
+    .social-grid { display: flex; flex-direction: column; gap: 10px; }
+    .social-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 12px 14px;
+      background: #fff; border: 1px solid #e2e9f2; border-radius: 12px;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: #2c3e50;
+      cursor: pointer; transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .social-btn:hover { background: #f6f9fd; border-color: #cdd9ea; box-shadow: 0 4px 12px rgba(16,42,77,0.06); }
+    .social-btn:active { transform: scale(0.99); }
+    .social-btn svg { width: 19px; height: 19px; flex-shrink: 0; }
+    .social-btn .apple-mark { font-size: 19px; line-height: 0; }
+
+    .link { margin-top: 24px; font-size: 14px; color: #5a6e8a; }
+    .link a { color: #2266dc; text-decoration: none; font-weight: 500; }
+    .link a:hover { text-decoration: underline; }
+    .terms { margin-top: 16px; font-size: 11.5px; color: #9aa7b6; line-height: 1.5; }
+    .terms a { color: #6c7a8e; text-decoration: underline; }
+
+    .msg {
+      padding: 11px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      display: none;
+      text-align: left;
+    }
+    .msg.error   { background: #ffe5e9; color: #c0392b; }
+    .msg.success { background: #e6f9f0; color: #1a7a4a; }
+    .msg.info    { background: #eaf1fd; color: #1a55c4; }
+
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="auth-shell">
+
+  <!-- Left: brand / value panel -->
+  <aside class="brand-panel">
+    <div class="brand-logo">
+      <img src="favicon.png?v=2" alt="DermaNova AI">
+      <span>DermaNova AI</span>
+    </div>
+    <div class="brand-hero">
+      <h2>Create your DermaNova AI account.</h2>
+      <p>Join clinicians using AI-assisted skin cancer screening — upload dermatoscopic images and get calibrated, explainable malignancy predictions in seconds.</p>
+      <ul class="brand-features">
+        <li>EfficientNetV2 model with multi-image aggregate analysis</li>
+        <li>Explainable AI summary for every scan result</li>
+        <li>Private, secure, and built for medical workflows</li>
+      </ul>
+    </div>
+    <div class="brand-foot">© 2026 DermaNova AI · For clinical decision support only</div>
+  </aside>
+
+  <!-- Right: sign-up form -->
+  <main class="form-panel">
+    <div class="auth-card">
+      <div class="logo-icon">
+        <img src="favicon.png?v=2" alt="DermaNova AI">
+      </div>
+      <h1>Create account</h1>
+      <div class="sub">Get started with DermaNova AI</div>
+
+      <div id="signupMsg" class="msg"></div>
+
+      <div class="input-group">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" placeholder="Dr. Jane Smith" autocomplete="name">
+      </div>
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="doctor@dermanova.ai" autocomplete="email">
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="new-password">
+          <button type="button" class="pw-toggle" data-target="password" aria-label="Show password">👁</button>
+        </div>
+      </div>
+      <ul class="pw-reqs" id="pwReqs">
+        <li data-req="upper">Starts with a capital</li>
+        <li data-req="len">At least 8 characters</li>
+        <li data-req="num">One number</li>
+        <li data-req="sym">One symbol</li>
+      </ul>
+
+      <button id="signupBtn" type="button">Create account</button>
+
+      <div class="divider">or sign up with</div>
+      <div class="social-grid">
+        <button type="button" class="social-btn" data-provider="Google">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+          </svg>
+          Continue with Google
+        </button>
+        <button type="button" class="social-btn" data-provider="Microsoft">
+          <svg viewBox="0 0 23 23" aria-hidden="true">
+            <path fill="#f25022" d="M1 1h10v10H1z"/>
+            <path fill="#7fba00" d="M12 1h10v10H12z"/>
+            <path fill="#00a4ef" d="M1 12h10v10H1z"/>
+            <path fill="#ffb900" d="M12 12h10v10H12z"/>
+          </svg>
+          Continue with Microsoft
+        </button>
+        <button type="button" class="social-btn" data-provider="Apple">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#000" d="M16.365 1.43c0 1.14-.42 2.205-1.12 3.005-.83.95-2.18 1.685-3.31 1.595a3.36 3.36 0 0 1-.04-.42c0-1.095.49-2.225 1.18-2.985.7-.78 1.93-1.37 2.97-1.41.02.21.02.42.02.215zm3.94 16.16c-.57 1.32-.85 1.9-1.59 3.06-1.03 1.62-2.48 3.64-4.28 3.65-1.6.02-2.01-1.04-4.18-1.03-2.17.01-2.62 1.05-4.22 1.04-1.8-.01-3.17-1.83-4.2-3.45-2.88-4.54-3.18-9.86-1.4-12.69 1.26-2.01 3.25-3.18 5.12-3.18 1.91 0 3.11 1.05 4.69 1.05 1.53 0 2.46-1.05 4.67-1.05 1.67 0 3.44.91 4.7 2.48-4.13 2.26-3.46 8.16.97 10.12z"/>
+          </svg>
+          Continue with Apple
+        </button>
+      </div>
+
+      <div class="link">Already have an account? <a href="login.html">Sign in</a></div>
+      <div class="terms">By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</div>
+    </div>
+  </main>
+
+</div>
+
+  <!-- Google OAuth Modal -->
+  <div class="google-modal-overlay" id="googleModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; width:100%; max-width:400px; border-radius:20px; padding:28px 24px; box-shadow:0 20px 50px rgba(0,0,0,0.2); font-family:'Inter',sans-serif; text-align:center; position:relative;">
+      <button id="closeGoogleModal" type="button" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:18px; cursor:pointer; color:#64748b;">✕</button>
+      <svg viewBox="0 0 48 48" style="width:44px; height:44px; margin-bottom:12px;">
+        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+        <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+      </svg>
+      <h3 style="font-size:20px; font-weight:700; color:#1e293b; margin-bottom:6px;">Sign up with Google</h3>
+      <p style="font-size:13px; color:#64748b; margin-bottom:20px;">Choose an account to continue to <strong>DermaNova AI</strong></p>
+      
+      <div style="text-align:left; margin-bottom:14px;">
+        <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:6px;">Google Email</label>
+        <input type="email" id="googleEmailInput" placeholder="doctor@gmail.com" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:10px; font-size:14px;">
+      </div>
+      
+      <div style="text-align:left; margin-bottom:20px;">
+        <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:6px;">Full Name</label>
+        <input type="text" id="googleNameInput" placeholder="Dr. Jane Smith" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:10px; font-size:14px;">
+      </div>
+      
+      <button id="confirmGoogleAuthBtn" type="button" style="width:100%; padding:13px; background:#1a73e8; color:#fff; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; transition:background 0.2s;">Continue with Google</button>
+    </div>
+  </div>
+
+<script>
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const msgDiv = document.getElementById('signupMsg');
+  const btn = document.getElementById('signupBtn');
+
+  // Show / hide password
+  document.querySelectorAll('.pw-toggle').forEach(tg => {
+    tg.addEventListener('click', () => {
+      const input = document.getElementById(tg.dataset.target);
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      tg.style.opacity = show ? '1' : '0.55';
+    });
+  });
+
+  // Live password requirement checklist
+  function pwChecks(pw) {
+    return {
+      upper: /^[A-Z]/.test(pw),
+      len:   pw.length >= 8,
+      num:   /[0-9]/.test(pw),
+      sym:   /[^A-Za-z0-9]/.test(pw)
+    };
+  }
+  function updatePwReqs() {
+    const c = pwChecks(passwordInput.value);
+    document.querySelectorAll('#pwReqs li').forEach(li => li.classList.toggle('ok', !!c[li.dataset.req]));
+  }
+  passwordInput.addEventListener('input', updatePwReqs);
+
+  function showMsg(type, text) {
+    msgDiv.className = 'msg ' + type;
+    msgDiv.innerText = text;
+    msgDiv.style.display = 'block';
+  }
+
+  btn.addEventListener('click', async () => {
+    const name     = nameInput.value.trim();
+    const email    = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    msgDiv.style.display = 'none';
+    msgDiv.className = 'msg';
+
+    if (!name || !email || !password) {
+      showMsg('error', 'All fields are required.');
+      return;
+    }
+
+    const c = pwChecks(password);
+    if (!(c.upper && c.len && c.num && c.sym)) {
+      showMsg('error', 'Password must start with a capital letter and include at least 8 characters, a number, and a symbol.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Creating account...';
+
+    try {
+      const formData = new FormData();
+      formData.append('full_name', name);
+      formData.append('email', email);
+      formData.append('password', password);
+
+      const response = await fetch('signup.php', { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (data.success) {
+        showMsg('success', data.message + ' Redirecting...');
+        localStorage.setItem('oncodiag_user', JSON.stringify(data.user));
+        setTimeout(() => { window.location.href = data.redirect || 'index.html'; }, 1000);
+      } else {
+        showMsg('error', data.message);
+        btn.disabled = false;
+        btn.innerHTML = 'Create account';
+      }
+    } catch (err) {
+      showMsg('error', 'Network error. Make sure XAMPP is running and you are accessing via localhost.');
+      btn.disabled = false;
+      btn.innerHTML = 'Create account';
+    }
+  });
+
+  // ── Social sign-up (Google OAuth Modal) ──
+  const googleModal = document.getElementById('googleModal');
+  const googleEmailInput = document.getElementById('googleEmailInput');
+  const googleNameInput = document.getElementById('googleNameInput');
+  const confirmGoogleBtn = document.getElementById('confirmGoogleAuthBtn');
+
+  document.querySelectorAll('.social-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      const provider = b.dataset.provider;
+      if (provider === 'Google') {
+        const typedEmail = emailInput?.value.trim();
+        const typedName  = nameInput?.value.trim();
+        googleEmailInput.value = typedEmail || 'doctor@gmail.com';
+        googleNameInput.value  = typedName || 'Dr. Google User';
+        googleModal.style.display = 'flex';
+      } else {
+        showMsg('info', `${provider} sign-up will be enabled for enterprise accounts soon. Please use Google or Email.`);
+        msgDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  });
+
+  document.getElementById('closeGoogleModal')?.addEventListener('click', () => {
+    googleModal.style.display = 'none';
+  });
+
+  confirmGoogleBtn?.addEventListener('click', async () => {
+    const gEmail = googleEmailInput.value.trim();
+    const gName  = googleNameInput.value.trim() || 'Google User';
+
+    if (!gEmail) {
+      alert('Please enter a valid Google email address.');
+      return;
+    }
+
+    confirmGoogleBtn.disabled = true;
+    confirmGoogleBtn.innerText = 'Signing up with Google...';
+
+    try {
+      const formData = new FormData();
+      formData.append('action', 'google_auth');
+      formData.append('email', gEmail);
+      formData.append('full_name', gName);
+
+      const response = await fetch('signup.php', { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (data.success) {
+        googleModal.style.display = 'none';
+        showMsg('success', '✅ ' + data.message + ' Redirecting...');
+        localStorage.setItem('oncodiag_user', JSON.stringify(data.user));
+        setTimeout(() => { window.location.href = data.redirect || 'index.html'; }, 800);
+      } else {
+        alert(data.message || 'Google signup failed.');
+      }
+    } catch(err) {
+      alert('Network error connecting to server.');
+    } finally {
+      confirmGoogleBtn.disabled = false;
+      confirmGoogleBtn.innerText = 'Continue with Google';
+    }
+  });
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && googleModal.style.display === 'none') btn.click(); });
+</script>
+</body>
+</html>

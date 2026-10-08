@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | DermaNova AI</title>
+  <link rel="icon" href="favicon.png?v=2" type="image/png" sizes="16x16 32x32 48x48 96x96 144x144 256x256">
+  <link rel="shortcut icon" href="favicon.png?v=2" type="image/png">
+  <link rel="apple-touch-icon" href="favicon.png?v=2">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f7fafd;
+      min-height: 100vh;
+      color: #1a2c3e;
+    }
+
+    /* ── Split-screen shell ── */
+    .auth-shell { display: flex; min-height: 100vh; }
+
+    /* Left brand panel */
+    .brand-panel {
+      flex: 1 1 46%;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(155deg, #163d8c 0%, #2266dc 52%, #3b82f6 100%);
+      color: #fff;
+      padding: 56px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .brand-panel::before,
+    .brand-panel::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      pointer-events: none;
+    }
+    .brand-panel::before { width: 380px; height: 380px; top: -120px; right: -120px; }
+    .brand-panel::after  { width: 260px; height: 260px; bottom: -90px; left: -80px; background: rgba(255,255,255,0.06); }
+    .brand-logo { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .brand-logo img {
+      width: 54px; height: 40px; object-fit: contain;
+      background: rgba(255,255,255,0.95); border-radius: 12px; padding: 5px;
+    }
+    .brand-logo span { font-size: 19px; font-weight: 700; letter-spacing: -0.2px; }
+    .brand-hero { position: relative; z-index: 1; }
+    .brand-hero h2 { font-size: 34px; line-height: 1.22; font-weight: 700; margin-bottom: 16px; max-width: 440px; }
+    .brand-hero p { font-size: 15px; line-height: 1.6; opacity: 0.85; max-width: 400px; margin-bottom: 28px; }
+    .brand-features { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .brand-features li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 14.5px; opacity: 0.95; line-height: 1.45;
+    }
+    .brand-features li::before {
+      content: '✓';
+      flex-shrink: 0;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; margin-top: 1px;
+    }
+    .brand-foot { position: relative; z-index: 1; font-size: 12.5px; opacity: 0.7; }
+
+    /* Right form panel */
+    .form-panel {
+      flex: 1 1 54%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 24px;
+    }
+    .auth-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 12px 44px rgba(16, 42, 77, 0.08);
+      border: 1px solid #eef2f7;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .brand-panel { display: none; }
+      .form-panel { flex: 1; padding: 24px 18px; }
+    }
+    h1 { font-size: 28px; font-weight: 700; color: #1a2c3e; margin-bottom: 8px; }
+    .sub { color: #6c7a8e; margin-bottom: 32px; font-size: 15px; }
+    .input-group { margin-bottom: 20px; text-align: left; }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #2c3e50; }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #e2e9f2;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      transition: 0.2s;
+    }
+    input:focus { outline: none; border-color: #2266dc; box-shadow: 0 0 0 3px rgba(34,102,220,0.1); }
+    button#loginBtn {
+      width: 100%;
+      padding: 14px;
+      background: #2266dc;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 6px 16px rgba(34,102,220,0.22);
+    }
+    button#loginBtn:hover, button#resetBtn:hover { background: #1a55c4; }
+    button#loginBtn:active, button#resetBtn:active { transform: scale(0.98); }
+    button#loginBtn:disabled, button#resetBtn:disabled { background: #a0b4d6; cursor: not-allowed; box-shadow: none; }
+    button#resetBtn {
+      width: 100%;
+      padding: 14px;
+      background: #2266dc;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 6px 16px rgba(34,102,220,0.22);
+    }
+    .forgot-btn {
+      background: none;
+      border: none;
+      color: #5a6e8a;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      text-align: right;
+      display: block;
+      width: 100%;
+      margin-bottom: 16px;
+      margin-top: -8px;
+      transition: color 0.2s;
+    }
+    .forgot-btn:hover { color: #2266dc; }
+    .back-btn { text-align: center; margin-top: 16px; margin-bottom: 0; width: 100%; }
+    .link { margin-top: 24px; font-size: 14px; color: #5a6e8a; }
+    .link a { color: #2266dc; text-decoration: none; font-weight: 500; }
+    .msg {
+      padding: 11px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      display: none;
+      text-align: left;
+    }
+    .logo-icon { display: none; margin-bottom: 12px; }
+    .logo-icon img {
+      width: 112px; height: auto; object-fit: contain;
+      mix-blend-mode: multiply; display: block; margin: 0 auto;
+    }
+    @media (max-width: 900px) {
+      .logo-icon { display: block; }
+    }
+    .msg.error   { background: #ffe5e9; color: #c0392b; }
+    .msg.success { background: #e6f9f0; color: #1a7a4a; }
+    .msg.info    { background: #eaf1fd; color: #1a55c4; }
+
+    /* ── Social sign-in ── */
+    .divider {
+      display: flex; align-items: center; gap: 14px;
+      margin: 22px 0 18px; color: #9aa7b6; font-size: 12.5px; font-weight: 500;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e6ecf3; }
+    .social-grid { display: flex; flex-direction: column; gap: 10px; }
+    .social-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 12px 14px;
+      background: #fff; border: 1px solid #e2e9f2; border-radius: 12px;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: #2c3e50;
+      cursor: pointer; transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .social-btn:hover { background: #f6f9fd; border-color: #cdd9ea; box-shadow: 0 4px 12px rgba(16,42,77,0.06); }
+    .social-btn:active { transform: scale(0.99); }
+    .social-btn svg { width: 19px; height: 19px; flex-shrink: 0; }
+
+    /* ── Multi-step reset flow ── */
+    .steps { display: none; align-items: center; justify-content: center; gap: 6px; margin-bottom: 28px; }
+    .steps.show { display: flex; }
+    .step {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600;
+      background: #eef2f8; color: #8a99aa; border: 2px solid #e2e9f2;
+      transition: 0.25s;
+    }
+    .step.active { background: #2266dc; color: #fff; border-color: #2266dc; box-shadow: 0 0 0 4px rgba(34,102,220,0.12); }
+    .step.done { background: #1a7a4a; color: #fff; border-color: #1a7a4a; }
+    .step-line { width: 34px; height: 2px; background: #e2e9f2; transition: 0.25s; }
+    .step-line.done { background: #1a7a4a; }
+
+    .otp-hint { font-size: 13.5px; color: #6c7a8e; margin-bottom: 20px; line-height: 1.5; }
+    .otp-hint strong { color: #1a2c3e; }
+    .otp-input {
+      text-align: center; font-size: 24px; letter-spacing: 14px;
+      font-weight: 700; padding: 16px; text-indent: 14px;
+    }
+    .otp-input::placeholder { letter-spacing: 10px; color: #cbd5e1; font-weight: 500; }
+
+    .resend-row { font-size: 13px; color: #6c7a8e; margin-top: 16px; }
+    .link-btn {
+      background: none; border: none; color: #2266dc; font-weight: 600;
+      font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; padding: 0;
+    }
+    .link-btn:hover { text-decoration: underline; }
+    .link-btn:disabled { color: #a0b4d6; cursor: not-allowed; text-decoration: none; }
+
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 46px; }
+    .pw-toggle {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 16px;
+      opacity: 0.55; padding: 4px; line-height: 1;
+    }
+    .pw-toggle:hover { opacity: 1; }
+
+    .pw-reqs {
+      list-style: none; text-align: left; margin: 0 0 18px; padding: 0;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 7px 12px;
+    }
+    .pw-reqs li {
+      font-size: 12px; color: #8a99aa; position: relative; padding-left: 20px;
+      transition: color 0.2s;
+    }
+    .pw-reqs li::before {
+      content: '○'; position: absolute; left: 0; font-size: 13px; line-height: 1.2;
+    }
+    .pw-reqs li.ok { color: #1a7a4a; font-weight: 500; }
+    .pw-reqs li.ok::before { content: '✓'; }
+
+    button#verifyOtpBtn, button#updatePasswordBtn {
+      width: 100%; padding: 14px; background: #2266dc; color: white; border: none;
+      border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer;
+      margin-top: 8px; font-family: 'Inter', sans-serif; transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 6px 16px rgba(34,102,220,0.22);
+    }
+    button#verifyOtpBtn:hover, button#updatePasswordBtn:hover { background: #1a55c4; }
+    button#verifyOtpBtn:active, button#updatePasswordBtn:active { transform: scale(0.98); }
+    button#verifyOtpBtn:disabled, button#updatePasswordBtn:disabled { background: #a0b4d6; cursor: not-allowed; }
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="auth-shell">
+
+  <!-- Left: brand / value panel -->
+  <aside class="brand-panel">
+    <div class="brand-logo">
+      <img src="app_icon.png" alt="DermaNova AI">
+      <span>DermaNova AI</span>
+    </div>
+    <div class="brand-hero">
+      <h2>AI-assisted skin cancer screening for clinicians.</h2>
+      <p>Upload dermatoscopic images and receive calibrated malignancy predictions with clear, explainable results — in seconds.</p>
+      <ul class="brand-features">
+        <li>EfficientNetV2 model with multi-image aggregate analysis</li>
+        <li>Explainable AI summary for every scan result</li>
+        <li>Private, secure, and built for medical workflows</li>
+      </ul>
+    </div>
+    <div class="brand-foot">© 2026 DermaNova AI · For clinical decision support only</div>
+  </aside>
+
+  <!-- Right: authentication form -->
+  <main class="form-panel">
+<div class="auth-card">
+  <div class="logo-icon">
+          <img src="app_icon.png" alt="DermaNova AI">
+        </div>
+  <h1 id="formTitle">Welcome back</h1>
+  <div class="sub" id="formSubtitle">Sign in to DermaNova AI</div>
+
+  <!-- Step indicator (reset flow only) -->
+  <div id="resetSteps" class="steps">
+    <span class="step" data-step="1">1</span>
+    <span class="step-line" data-line="1"></span>
+    <span class="step" data-step="2">2</span>
+    <span class="step-line" data-line="2"></span>
+    <span class="step" data-step="3">3</span>
+  </div>
+
+  <div id="loginMsg" class="msg"></div>
+
+  <!-- Login Form -->
+  <div id="loginFormArea">
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="doctor@dermanova.ai" autocomplete="email">
+    </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="••••••" autocomplete="current-password">
+    </div>
+    
+    <button id="forgotPasswordBtn" type="button" class="forgot-btn">Forgot password?</button>
+
+    <button id="loginBtn" type="button">Sign in</button>
+
+    <div class="divider">or continue with</div>
+    <div class="social-grid">
+      <button type="button" class="social-btn" data-provider="Google">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+          <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+          <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+          <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+        </svg>
+        Continue with Google
+      </button>
+      <button type="button" class="social-btn" data-provider="Microsoft">
+        <svg viewBox="0 0 23 23" aria-hidden="true">
+          <path fill="#f25022" d="M1 1h10v10H1z"/>
+          <path fill="#7fba00" d="M12 1h10v10H12z"/>
+          <path fill="#00a4ef" d="M1 12h10v10H1z"/>
+          <path fill="#ffb900" d="M12 12h10v10H12z"/>
+        </svg>
+        Continue with Microsoft
+      </button>
+    </div>
+
+    <div class="link">Don't have an account? <a href="signup.html">Create account</a></div>
+  </div>
+
+  <!-- Step 1: Request OTP (email) -->
+  <div id="resetFormArea" style="display: none;">
+    <div class="input-group">
+      <label for="resetEmail">Email</label>
+      <input type="email" id="resetEmail" name="resetEmail" placeholder="doctor@dermanova.ai" autocomplete="email">
+    </div>
+
+    <button id="resetBtn" type="button">Send verification code</button>
+    <button id="backToLoginBtn" type="button" class="forgot-btn back-btn">← Back to Login</button>
+  </div>
+
+  <!-- Step 2: Verify OTP only -->
+  <div id="otpFormArea" style="display: none;">
+    <p class="otp-hint">Enter the 6-digit code we sent to <strong id="otpEmailLabel"></strong></p>
+    <div class="input-group">
+      <label for="otpCode">Verification code</label>
+      <input type="text" id="otpCode" name="otpCode" class="otp-input" placeholder="------" maxlength="6"
+        inputmode="numeric" autocomplete="one-time-code">
+    </div>
+
+    <button id="verifyOtpBtn" type="button">Verify code</button>
+    <div class="resend-row">
+      Didn't receive it? <button id="resendOtpBtn" type="button" class="link-btn">Resend code</button>
+    </div>
+    <button id="backToResetBtn" type="button" class="forgot-btn back-btn">← Back</button>
+  </div>
+
+  <!-- Step 3: Set new password (shown only after OTP verified) -->
+  <div id="newPasswordFormArea" style="display: none;">
+    <p class="otp-hint">Code verified ✓ — choose a new password for your account.</p>
+    <div class="input-group">
+      <label for="otpNewPassword">New password</label>
+      <div class="pw-wrap">
+        <input type="password" id="otpNewPassword" name="otpNewPassword" placeholder="••••••••" autocomplete="new-password">
+        <button type="button" class="pw-toggle" data-target="otpNewPassword" aria-label="Show password">👁</button>
+      </div>
+    </div>
+    <div class="input-group">
+      <label for="otpConfirmPassword">Confirm password</label>
+      <div class="pw-wrap">
+        <input type="password" id="otpConfirmPassword" name="otpConfirmPassword" placeholder="••••••••" autocomplete="new-password">
+        <button type="button" class="pw-toggle" data-target="otpConfirmPassword" aria-label="Show password">👁</button>
+      </div>
+    </div>
+    <ul class="pw-reqs" id="pwReqs">
+      <li data-req="len">At least 8 characters</li>
+      <li data-req="upper">One uppercase letter</li>
+      <li data-req="num">One number</li>
+      <li data-req="sym">One symbol</li>
+    </ul>
+
+    <button id="updatePasswordBtn" type="button">Update password</button>
+    <button id="backToOtpBtn" type="button" class="forgot-btn back-btn">← Back</button>
+  </div>
+</div>
+  </main>
+
+</div>
+
+<script>
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const msgDiv   = document.getElementById('loginMsg');
+    const btn      = document.getElementById('loginBtn');
+
+    // Hide previous messages
+    msgDiv.style.display = 'none';
+    msgDiv.className = 'msg';
+
+    // Client-side validation
+    if (!email || !password) {
+      showMsg('error', '⚠️ Please fill in all fields.');
+      return;
+    }
+
+    // Show loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Signing in...';
+
+    try {
+      // Send credentials to login.php via FormData (POST)
+      const formData = new FormData();
+      formData.append('action', 'login');
+      formData.append('email', email);
+      formData.append('password', password);
+
+      const response = await fetch('login.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showMsg('success', '✅ ' + data.message + ' Redirecting...');
+        // Save user info for app.js (used to show name/email in sidebar)
+        localStorage.setItem('oncodiag_user', JSON.stringify(data.user));
+        setTimeout(() => {
+          window.location.href = data.redirect || 'index.html';
+        }, 800);
+      } else {
+        showMsg('error', '❌ ' + data.message);
+        btn.disabled = false;
+        btn.innerHTML = 'Sign in';
+      }
+    } catch (err) {
+      showMsg('error', '❌ Network error. Make sure XAMPP is running and you are accessing via localhost.');
+      btn.disabled = false;
+      btn.innerHTML = 'Sign in';
+    }
+  });
+
+  function showMsg(type, text) {
+    const msgDiv = document.getElementById('loginMsg');
+    msgDiv.className = 'msg ' + type;
+    msgDiv.innerText = text;
+    msgDiv.style.display = 'block';
+  }
+
+  // ── Multi-step password reset ──
+  const loginFormArea       = document.getElementById('loginFormArea');
+  const resetFormArea       = document.getElementById('resetFormArea');
+  const otpFormArea         = document.getElementById('otpFormArea');
+  const newPasswordFormArea = document.getElementById('newPasswordFormArea');
+  const formSubtitle        = document.getElementById('formSubtitle');
+  const resetSteps          = document.getElementById('resetSteps');
+
+  let verifiedOtp = '';   // remembered between step 2 (verify) and step 3 (set password)
+
+  // step: 0 = login, 1 = email, 2 = otp, 3 = new password
+  function setStep(step) {
+    document.getElementById('loginMsg').style.display = 'none';
+    loginFormArea.style.display       = step === 0 ? 'block' : 'none';
+    resetFormArea.style.display       = step === 1 ? 'block' : 'none';
+    otpFormArea.style.display         = step === 2 ? 'block' : 'none';
+    newPasswordFormArea.style.display = step === 3 ? 'block' : 'none';
+
+    resetSteps.classList.toggle('show', step >= 1);
+    if (step >= 1) {
+      resetSteps.querySelectorAll('.step').forEach(el => {
+        const s = +el.dataset.step;
+        el.classList.toggle('active', s === step);
+        el.classList.toggle('done', s < step);
+      });
+      resetSteps.querySelectorAll('.step-line').forEach(el => {
+        el.classList.toggle('done', +el.dataset.line < step);
+      });
+    }
+
+    const titles = {
+      0: 'Welcome back',
+      1: 'Forgot password?',
+      2: 'Verify your identity',
+      3: 'New password'
+    };
+    const subtitles = {
+      0: 'Sign in to DermaNova AI',
+      1: 'Enter your email to receive a reset code',
+      2: 'Weʼve sent a verification code to your email',
+      3: 'Choose a strong new password'
+    };
+    document.getElementById('formTitle').innerText = titles[step];
+    formSubtitle.innerText = subtitles[step];
+
+    // Focus the primary input of the new step
+    const focusMap = { 1: 'resetEmail', 2: 'otpCode', 3: 'otpNewPassword' };
+    if (focusMap[step]) setTimeout(() => document.getElementById(focusMap[step])?.focus(), 60);
+  }
+
+  document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
+    // Carry over any email already typed on the login form
+    const typed = document.getElementById('email').value.trim();
+    if (typed) document.getElementById('resetEmail').value = typed;
+    setStep(1);
+  });
+  document.getElementById('backToLoginBtn').addEventListener('click', () => setStep(0));
+  document.getElementById('backToResetBtn').addEventListener('click', () => setStep(1));
+  document.getElementById('backToOtpBtn').addEventListener('click', () => setStep(2));
+
+  // Restrict the OTP box to digits only
+  document.getElementById('otpCode').addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 6);
+  });
+
+  // ── Step 1 → send the OTP email (btn optional: shows a spinner when provided) ──
+  async function sendOtp(btn, busyLabel, idleLabel) {
+    const email = document.getElementById('resetEmail').value.trim();
+    document.getElementById('loginMsg').style.display = 'none';
+
+    if (!email) { showMsg('error', '⚠️ Please enter your email.'); return false; }
+
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>' + busyLabel; }
+    try {
+      const formData = new FormData();
+      formData.append('email', email);
+      const data = await (await fetch('send.php', { method: 'POST', body: formData })).json();
+
+      if (data.success) {
+        document.getElementById('otpEmailLabel').innerText = email;
+        showMsg('success', '✅ ' + data.message);
+        return true;
+      }
+      showMsg('error', '❌ ' + data.message);
+      return false;
+    } catch (err) {
+      showMsg('error', '❌ Network error. Make sure XAMPP is running.');
+      return false;
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = idleLabel; }
+    }
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('resetBtn');
+    if (await sendOtp(btn, 'Sending...', 'Send verification code')) {
+      document.getElementById('otpCode').value = '';
+      setStep(2);
+    }
+  });
+
+  // Resend from step 2 (stays on the OTP screen)
+  document.getElementById('resendOtpBtn').addEventListener('click', async (e) => {
+    const link = e.currentTarget;
+    const old = link.innerText;
+    link.disabled = true;
+    link.innerText = 'Sending...';
+    await sendOtp(null);
+    link.innerText = old;
+    link.disabled = false;
+  });
+
+  // ── Step 2 → verify the OTP only ──
+  document.getElementById('verifyOtpBtn').addEventListener('click', async () => {
+    const email = document.getElementById('resetEmail').value.trim();
+    const otp   = document.getElementById('otpCode').value.trim();
+    const btn   = document.getElementById('verifyOtpBtn');
+    document.getElementById('loginMsg').style.display = 'none';
+
+    if (otp.length !== 6) { showMsg('error', '⚠️ Please enter the 6-digit code.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Verifying...';
+    try {
+      const formData = new FormData();
+      formData.append('action', 'verify_otp');
+      formData.append('email', email);
+      formData.append('otp', otp);
+      const data = await (await fetch('login.php', { method: 'POST', body: formData })).json();
+
+      if (data.success) {
+        verifiedOtp = otp;
+        document.getElementById('otpNewPassword').value = '';
+        document.getElementById('otpConfirmPassword').value = '';
+        updatePwReqs();
+        setStep(3);
+      } else {
+        showMsg('error', '❌ ' + data.message);
+      }
+    } catch (err) {
+      showMsg('error', '❌ Network error.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Verify code';
+    }
+  });
+
+  // ── Step 3 → live password-requirement checklist ──
+  function pwChecks(pw) {
+    return { len: pw.length >= 8, upper: /[A-Z]/.test(pw), num: /[0-9]/.test(pw), sym: /[\W]/.test(pw) };
+  }
+  function updatePwReqs() {
+    const pw = document.getElementById('otpNewPassword').value;
+    const c = pwChecks(pw);
+    document.querySelectorAll('#pwReqs li').forEach(li => li.classList.toggle('ok', !!c[li.dataset.req]));
+  }
+  document.getElementById('otpNewPassword').addEventListener('input', updatePwReqs);
+
+  // Password show/hide toggles
+  document.querySelectorAll('.pw-toggle').forEach(tg => {
+    tg.addEventListener('click', () => {
+      const input = document.getElementById(tg.dataset.target);
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      tg.style.opacity = show ? '1' : '0.55';
+    });
+  });
+
+  // ── Step 3 → submit the new password ──
+  document.getElementById('updatePasswordBtn').addEventListener('click', async () => {
+    const email           = document.getElementById('resetEmail').value.trim();
+    const newPassword     = document.getElementById('otpNewPassword').value;
+    const confirmPassword = document.getElementById('otpConfirmPassword').value;
+    const btn             = document.getElementById('updatePasswordBtn');
+    document.getElementById('loginMsg').style.display = 'none';
+
+    if (!newPassword || !confirmPassword) { showMsg('error', '⚠️ Please fill in both fields.'); return; }
+    const c = pwChecks(newPassword);
+    if (!(c.len && c.upper && c.num && c.sym)) {
+      showMsg('error', '⚠️ Password must be 8+ chars with an uppercase letter, a number, and a symbol.');
+      return;
+    }
+    if (newPassword !== confirmPassword) { showMsg('error', '⚠️ Passwords do not match.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Updating...';
+    try {
+      const formData = new FormData();
+      formData.append('action', 'verify_otp_reset');
+      formData.append('email', email);
+      formData.append('otp', verifiedOtp);
+      formData.append('new_password', newPassword);
+      const data = await (await fetch('login.php', { method: 'POST', body: formData })).json();
+
+      if (data.success) {
+        showMsg('success', '✅ ' + data.message);
+        setTimeout(() => {
+          ['resetEmail', 'otpCode', 'otpNewPassword', 'otpConfirmPassword'].forEach(id => document.getElementById(id).value = '');
+          verifiedOtp = '';
+          updatePwReqs();
+          setStep(0);
+        }, 1800);
+      } else {
+        showMsg('error', '❌ ' + data.message);
+      }
+    } catch (err) {
+      showMsg('error', '❌ Network error.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Update password';
+    }
+  });
+
+  <!-- Google OAuth Modal -->
+  <div class="google-modal-overlay" id="googleModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; width:100%; max-width:400px; border-radius:20px; padding:28px 24px; box-shadow:0 20px 50px rgba(0,0,0,0.2); font-family:'Inter',sans-serif; text-align:center; position:relative;">
+      <button id="closeGoogleModal" type="button" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:18px; cursor:pointer; color:#64748b;">✕</button>
+      <svg viewBox="0 0 48 48" style="width:44px; height:44px; margin-bottom:12px;">
+        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+        <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+      </svg>
+      <h3 style="font-size:20px; font-weight:700; color:#1e293b; margin-bottom:6px;">Sign in with Google</h3>
+      <p style="font-size:13px; color:#64748b; margin-bottom:20px;">Choose an account to continue to <strong>DermaNova AI</strong></p>
+      
+      <div style="text-align:left; margin-bottom:14px;">
+        <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:6px;">Google Email</label>
+        <input type="email" id="googleEmailInput" placeholder="doctor@gmail.com" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:10px; font-size:14px;">
+      </div>
+      
+      <div style="text-align:left; margin-bottom:20px;">
+        <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:6px;">Full Name</label>
+        <input type="text" id="googleNameInput" placeholder="Dr. Jane Smith" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:10px; font-size:14px;">
+      </div>
+      
+      <button id="confirmGoogleAuthBtn" type="button" style="width:100%; padding:13px; background:#1a73e8; color:#fff; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; transition:background 0.2s;">Continue with Google</button>
+    </div>
+  </div>
+
+  // ── Social sign-in (Google OAuth Modal) ──
+  const googleModal = document.getElementById('googleModal');
+  const googleEmailInput = document.getElementById('googleEmailInput');
+  const googleNameInput = document.getElementById('googleNameInput');
+  const confirmGoogleBtn = document.getElementById('confirmGoogleAuthBtn');
+
+  document.querySelectorAll('.social-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      const provider = b.dataset.provider;
+      if (provider === 'Google') {
+        const typedEmail = document.getElementById('email')?.value.trim();
+        googleEmailInput.value = typedEmail || 'doctor@gmail.com';
+        googleNameInput.value  = 'Dr. Google User';
+        googleModal.style.display = 'flex';
+      } else {
+        showMsg('info', `${provider} sign-in will be enabled for enterprise accounts soon. Please sign in with Google or Email.`);
+      }
+    });
+  });
+
+  document.getElementById('closeGoogleModal')?.addEventListener('click', () => {
+    googleModal.style.display = 'none';
+  });
+
+  confirmGoogleBtn?.addEventListener('click', async () => {
+    const gEmail = googleEmailInput.value.trim();
+    const gName  = googleNameInput.value.trim() || 'Google User';
+
+    if (!gEmail) {
+      alert('Please enter a valid Google email address.');
+      return;
+    }
+
+    confirmGoogleBtn.disabled = true;
+    confirmGoogleBtn.innerText = 'Signing in with Google...';
+
+    try {
+      const formData = new FormData();
+      formData.append('action', 'google_auth');
+      formData.append('email', gEmail);
+      formData.append('full_name', gName);
+
+      const response = await fetch('login.php', { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (data.success) {
+        googleModal.style.display = 'none';
+        showMsg('success', '✅ ' + data.message + ' Redirecting...');
+        localStorage.setItem('oncodiag_user', JSON.stringify(data.user));
+        setTimeout(() => { window.location.href = data.redirect || 'index.html'; }, 800);
+      } else {
+        alert(data.message || 'Google login failed.');
+      }
+    } catch(err) {
+      alert('Network error connecting to server.');
+    } finally {
+      confirmGoogleBtn.disabled = false;
+      confirmGoogleBtn.innerText = 'Continue with Google';
+    }
+  });
+
+  // Enter key submits the currently visible step
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || (googleModal && googleModal.style.display !== 'none')) return;
+    if (loginFormArea.style.display !== 'none')             document.getElementById('loginBtn').click();
+    else if (resetFormArea.style.display !== 'none')        document.getElementById('resetBtn').click();
+    else if (otpFormArea.style.display !== 'none')          document.getElementById('verifyOtpBtn').click();
+    else if (newPasswordFormArea.style.display !== 'none')  document.getElementById('updatePasswordBtn').click();
+  });
+</script>
+</body>
+</html>
